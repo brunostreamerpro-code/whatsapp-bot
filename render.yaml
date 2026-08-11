@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: whatsapp-bot
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: POWERCRM_API_URL
+        value: https://app.powercrm.com.br
+      - key: POWERCRM_COMPANY_ID
+        value: "1412"
+      - key: WHATSAPP_SESSION_NAME
+        value: whatsapp-session
+      - key: AUDIO_FOLDER
+        value: ./audios
+      - key: BOT_PREFIX
+        value: "!"
+      - key: AUTO_RESPOND
+        value: "true"
+
+  - type: redis
+    name: whatsapp-redis
+    plan: free
+    ipAllowList: []

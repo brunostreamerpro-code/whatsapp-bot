@@ -1,0 +1,27 @@
+{
+  "name": "whatsapp-placa-bot",
+  "version": "1.0.0",
+  "description": "Bot WhatsApp para consulta de placa e envio de áudios",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "start-all": "node start-all.js",
+    "qr": "node qr-server-pro.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.6.2",
+    "axios": "^1.6.0",
+    "cheerio": "^1.2.0",
+    "chokidar": "^5.0.0",
+    "dotenv": "^16.3.1",
+    "express": "^5.2.1",
+    "google-tts-api": "^2.0.2",
+    "pino": "^8.17.2",
+    "pino-pretty": "^10.3.1",
+    "puppeteer": "^25.6.0",
+    "qrcode": "^1.5.4",
+    "redis": "^6.2.1"
+  }
+}
