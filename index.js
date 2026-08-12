@@ -45,9 +45,11 @@ async function connectWhatsApp() {
     throw err;
   }
 
+  logger.info('Registrando event listeners...');
+
   sock.ev.on('connection.update', async (update) => {
     const { connection, lastDisconnect, qr } = update;
-    logger.debug(`📡 connection.update recebido - connection: ${connection}, qr: ${!!qr}`);
+    logger.info(`📡 connection.update recebido - connection: ${connection}, qr: ${!!qr}`);
 
     if (qr) {
       logger.info('📱 QR Code gerado! Escaneando...\n');
@@ -260,7 +262,10 @@ try {
   await connectWhatsApp();
   logger.info('✅ connectWhatsApp() completou');
 } catch (err) {
-  logger.error('❌ Erro em connectWhatsApp():', err);
+  logger.error('❌ Erro em connectWhatsApp()');
+  logger.error('Stack:', err?.stack || 'sem stack');
+  logger.error('Message:', err?.message || 'sem mensagem');
+  logger.error('Full error:', JSON.stringify(err));
   process.exit(1);
 }
 
