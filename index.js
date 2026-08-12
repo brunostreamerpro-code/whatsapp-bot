@@ -100,7 +100,9 @@ async function connectWhatsApp() {
 
   try {
     logger.info('Registrando creds.update...');
-    sock.ev.on('creds.update', saveCreds);
+    sock.ev.on('creds.update', () => {
+      saveCreds().catch(err => logger.error('Erro ao salvar credenciais:', err.message));
+    });
     logger.info('✅ creds.update registrado');
   } catch (e) {
     logger.error('❌ Erro ao registrar creds.update:', e?.message);
