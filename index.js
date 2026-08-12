@@ -6,7 +6,7 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import QRCode from 'qrcode';
-import { searchPlate } from './services/powercrm.js';
+import { searchPlate } from './services/querybuscas.js';
 import { extractPlateNumber } from './utils/parser.js';
 import { initRedis, saveConsultation, saveUserContext, getUserContext, closeRedis } from './services/redis.js';
 
