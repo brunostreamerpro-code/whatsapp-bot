@@ -250,12 +250,19 @@ function formatPlateDetails(data) {
 logger.info('🚀 Iniciando bot WhatsApp...');
 
 // Inicializar Redis
+logger.info('Inicializando Redis...');
 await initRedis();
+logger.info('Redis inicializado (ou falhando gracefully)');
 
-connectWhatsApp().catch(err => {
-  logger.error('Erro:', err);
+// Conectar ao WhatsApp
+logger.info('Chamando connectWhatsApp()...');
+try {
+  await connectWhatsApp();
+  logger.info('✅ connectWhatsApp() completou');
+} catch (err) {
+  logger.error('❌ Erro em connectWhatsApp():', err);
   process.exit(1);
-});
+}
 
 // Forçar reconexão a cada 2 minutos se não estiver conectado
 setInterval(() => {
