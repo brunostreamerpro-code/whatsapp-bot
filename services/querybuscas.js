@@ -69,13 +69,18 @@ export async function searchPlate(plate) {
 
   } catch (error) {
     if (error.response?.status === 401) {
-      logger.error('❌ Token de autorização inválido ou expirado');
+      logger.error('❌ Token QueryBuscas inválido ou expirado');
+      logger.error('Resposta:', error.response?.data);
     } else if (error.response?.status === 404) {
       logger.warn(`Placa não encontrada: ${plate}`);
       return null;
     } else {
       logger.error(`Erro ao buscar placa: ${error.message}`);
+      if (error.response?.status) {
+        logger.error(`Status: ${error.response.status}`);
+        logger.error(`Dados: ${JSON.stringify(error.response.data)}`);
+      }
     }
-    throw error;
+    return null;
   }
 }

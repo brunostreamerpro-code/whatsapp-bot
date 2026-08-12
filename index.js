@@ -248,6 +248,17 @@ connectWhatsApp().catch(err => {
   process.exit(1);
 });
 
+// Forçar reconexão a cada 2 minutos se não estiver conectado
+setInterval(() => {
+  if (!isConnected && sock) {
+    logger.info('⚠️ Sem conexão. Forçando reconexão...');
+    try {
+      sock.ws?.close();
+    } catch (e) {}
+    connectWhatsApp().catch(err => logger.error('Erro na reconexão:', err));
+  }
+}, 120000);
+
 process.on('SIGINT', async () => {
   logger.info('Encerrando...');
   await closeRedis();
