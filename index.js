@@ -47,7 +47,9 @@ async function connectWhatsApp() {
 
   logger.info('Registrando event listeners...');
 
-  sock.ev.on('connection.update', async (update) => {
+  try {
+    logger.info('Registrando connection.update...');
+    sock.ev.on('connection.update', async (update) => {
     const { connection, lastDisconnect, qr } = update;
     logger.info(`📡 connection.update recebido - connection: ${connection}, qr: ${!!qr}`);
 
@@ -90,9 +92,24 @@ async function connectWhatsApp() {
     }
   });
 
-  sock.ev.on('creds.update', saveCreds);
+    logger.info('✅ connection.update registrado');
+  } catch (e) {
+    logger.error('❌ Erro ao registrar connection.update:', e?.message);
+    throw e;
+  }
 
-  sock.ev.on('messages.upsert', async (m) => {
+  try {
+    logger.info('Registrando creds.update...');
+    sock.ev.on('creds.update', saveCreds);
+    logger.info('✅ creds.update registrado');
+  } catch (e) {
+    logger.error('❌ Erro ao registrar creds.update:', e?.message);
+    throw e;
+  }
+
+  try {
+    logger.info('Registrando messages.upsert...');
+    sock.ev.on('messages.upsert', async (m) => {
     const message = m.messages[0];
 
     if (!message.message || message.key.fromMe) return;
@@ -126,7 +143,12 @@ async function connectWhatsApp() {
         text: '❌ Placa não reconhecida.\n\nEnvie a placa no formato:\n• ABC1234 (placa antiga)\n• ABC1D23 (Mercosul)'
       });
     }
-  });
+    });
+    logger.info('✅ messages.upsert registrado');
+  } catch (e) {
+    logger.error('❌ Erro ao registrar messages.upsert:', e?.message);
+    throw e;
+  }
 }
 
 async function handlePlateQuery(sender, plate) {
