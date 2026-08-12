@@ -9,7 +9,11 @@ export async function initRedis() {
   try {
     redisClient = createClient({
       host: 'localhost',
-      port: 6379
+      port: 6379,
+      socket: {
+        reconnectStrategy: () => null, // Não reconectar automaticamente
+        connectTimeout: 2000 // Timeout de 2 segundos
+      }
     });
 
     redisClient.on('error', (err) => {
@@ -21,12 +25,19 @@ export async function initRedis() {
       logger.info('✅ Redis conectado!');
     });
 
-    await redisClient.connect();
+    // Tentar conectar com timeout de 3 segundos
+    const connectPromise = redisClient.connect();
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Redis connection timeout')), 3000)
+    );
+
+    await Promise.race([connectPromise, timeoutPromise]);
     return true;
 
   } catch (error) {
     logger.warn(`⚠️ Redis não disponível: ${error.message}`);
     logger.warn('💡 Usando apenas memória (cache em RAM)');
+    redisClient = null;
     return false;
   }
 }
