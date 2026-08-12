@@ -83,6 +83,20 @@ app.post('/api/reconnect', (req, res) => {
   res.json({ ok: true, message: 'Reconexão iniciada' });
 });
 
+// API para notificar que QR code foi atualizado
+app.post('/api/qr-updated', (req, res) => {
+  logger.info('🔄 QR Code atualizado via bot!');
+  clients.forEach(client => {
+    try {
+      client.write(`data: ${JSON.stringify({
+        type: 'qr_update',
+        timestamp: Date.now()
+      })}\n\n`);
+    } catch (e) {}
+  });
+  res.json({ ok: true });
+});
+
 // Monitorar QR Code (apenas em desenvolvimento)
 if (process.env.NODE_ENV !== 'production') {
   const qrWatcher = chokidar.watch('qrcode.png', {

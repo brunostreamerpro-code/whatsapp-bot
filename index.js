@@ -66,6 +66,15 @@ async function connectWhatsApp() {
         });
         logger.info('✅ QR Code salvo em: qrcode.png');
         logger.info('📲 Escaneie com seu WhatsApp!\n');
+
+        // Notificar dashboard que QR foi atualizado
+        try {
+          await fetch('http://localhost:3000/api/qr-updated', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ timestamp: Date.now() })
+          }).catch(() => {});
+        } catch (e) {}
       } catch (err) {
         logger.error('Erro ao salvar QR:', err);
       }
