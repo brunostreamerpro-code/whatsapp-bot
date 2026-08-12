@@ -69,6 +69,20 @@ app.post('/api/disconnect', (req, res) => {
   res.json({ ok: true });
 });
 
+// API para reconectar/gerar novo QR
+app.post('/api/reconnect', (req, res) => {
+  logger.info('🔄 Reconectando bot...');
+  connectionStatus.connected = false;
+  broadcastStatus();
+
+  // Enviar sinal para reconectar (será ouvido pelo bot)
+  try {
+    fetch('http://localhost:3001/api/reconnect', { method: 'POST' }).catch(() => {});
+  } catch (e) {}
+
+  res.json({ ok: true, message: 'Reconexão iniciada' });
+});
+
 // Monitorar QR Code (apenas em desenvolvimento)
 if (process.env.NODE_ENV !== 'production') {
   const qrWatcher = chokidar.watch('qrcode.png', {
@@ -371,6 +385,9 @@ app.get('/', (req, res) => {
             2. Configurações → Dispositivos vinculados<br>
             3. Escaneie o QR Code acima<br>
             4. Pronto! 🎉
+            <br><br>
+            <strong>❌ QR Code expirou?</strong><br>
+            <button onclick="location.reload()" style="padding: 8px 16px; background: #25d366; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; font-weight: bold;">Gerar Novo QR Code</button>
           </div>
 
           <div class="timestamp" id="timestamp">
