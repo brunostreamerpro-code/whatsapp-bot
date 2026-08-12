@@ -30,15 +30,24 @@ let isConnected = false;
 const userContext = new Map();
 
 async function connectWhatsApp() {
-  const { state, saveCreds } = await useMultiFileAuthState('auth_info_baileys');
+  try {
+    logger.info('📱 Carregando estado da sessão...');
+    const { state, saveCreds } = await useMultiFileAuthState('auth_info_baileys');
 
-  sock = makeWASocket({
-    auth: state,
-    logger: pino({ level: 'silent' })
-  });
+    logger.info('🔌 Criando socket WhatsApp...');
+    sock = makeWASocket({
+      auth: state,
+      logger: pino({ level: 'silent' })
+    });
+    logger.info('✅ Socket criado com sucesso');
+  } catch (err) {
+    logger.error('❌ Erro ao conectar:', err.message);
+    throw err;
+  }
 
   sock.ev.on('connection.update', async (update) => {
     const { connection, lastDisconnect, qr } = update;
+    logger.debug(`📡 connection.update recebido - connection: ${connection}, qr: ${!!qr}`);
 
     if (qr) {
       logger.info('📱 QR Code gerado! Escaneando...\n');
