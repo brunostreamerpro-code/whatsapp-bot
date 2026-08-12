@@ -18,18 +18,20 @@ let connectionStatus = {
   sessionFile: null
 };
 
-// Monitorar status de conexão pela sessão do WhatsApp
-const sessionPath = path.join(__dirname, 'auth_info_baileys');
-const watcher = chokidar.watch(sessionPath, {
-  persistent: true,
-  ignoreInitial: true
-}).on('add', () => {
-  connectionStatus.sessionFile = new Date();
-  broadcastStatus();
-}).on('change', () => {
-  connectionStatus.sessionFile = new Date();
-  broadcastStatus();
-});
+// Monitorar status de conexão pela sessão do WhatsApp (apenas em desenvolvimento)
+if (process.env.NODE_ENV !== 'production') {
+  const sessionPath = path.join(__dirname, 'auth_info_baileys');
+  const watcher = chokidar.watch(sessionPath, {
+    persistent: true,
+    ignoreInitial: true
+  }).on('add', () => {
+    connectionStatus.sessionFile = new Date();
+    broadcastStatus();
+  }).on('change', () => {
+    connectionStatus.sessionFile = new Date();
+    broadcastStatus();
+  });
+}
 
 // Servir arquivos estáticos
 app.use(express.static('.'));
@@ -67,19 +69,21 @@ app.post('/api/disconnect', (req, res) => {
   res.json({ ok: true });
 });
 
-// Monitorar QR Code
-const qrWatcher = chokidar.watch('qrcode.png', {
-  persistent: true,
-  awaitWriteFinish: {
-    stabilityThreshold: 300,
-    pollInterval: 100
-  }
-});
+// Monitorar QR Code (apenas em desenvolvimento)
+if (process.env.NODE_ENV !== 'production') {
+  const qrWatcher = chokidar.watch('qrcode.png', {
+    persistent: true,
+    awaitWriteFinish: {
+      stabilityThreshold: 300,
+      pollInterval: 100
+    }
+  });
 
-qrWatcher.on('change', () => {
-  logger.info('🔄 QR Code atualizado!');
-  broadcastQrUpdate();
-});
+  qrWatcher.on('change', () => {
+    logger.info('🔄 QR Code atualizado!');
+    broadcastQrUpdate();
+  });
+}
 
 function broadcastStatus() {
   clients.forEach(client => {
